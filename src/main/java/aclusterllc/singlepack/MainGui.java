@@ -18,7 +18,7 @@ public class MainGui implements ObserverSMMessage {
     private JLabel feedLabel;
     public JLabel pingLabel;
     String projectName="SinglePack";
-    String projectVersion="1.0.0.1";
+    String projectVersion="1.0.0.2";
     private JCheckBox chk_log_sm_msg;
     Logger logger = LoggerFactory.getLogger(MainGui.class);
 

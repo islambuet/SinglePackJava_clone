@@ -139,8 +139,6 @@ public class HelperConfiguration {
             dbBasicInfo.put("estop_locations",HelperDatabase.getSelectQueryResults(connection,query,new String[] { "machine_id", "location_id"}));
             query = "SELECT * FROM events";
             dbBasicInfo.put("events",HelperDatabase.getSelectQueryResults(connection,query,new String[] { "machine_id", "event_id"}));
-            query = "SELECT * FROM inductions";
-            dbBasicInfo.put("inductions",HelperDatabase.getSelectQueryResults(connection,query,new String[] { "value"}));
             query = "SELECT * FROM inducts";
             dbBasicInfo.put("inducts",HelperDatabase.getSelectQueryResults(connection,query,new String[] { "machine_id", "induct_id"}));
             query = "SELECT * FROM inputs";
