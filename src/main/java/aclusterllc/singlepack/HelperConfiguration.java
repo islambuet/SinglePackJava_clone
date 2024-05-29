@@ -82,6 +82,8 @@ public class HelperConfiguration {
         SM_MESSAGE_ID_NAME.put("56", "Counter Message");
         SM_MESSAGE_ID_NAME.put("57", "OEEData Message");
         SM_MESSAGE_ID_NAME.put("58", "Shutdown Message");
+        SM_MESSAGE_ID_NAME.put("59", "MPInduct Message");
+        SM_MESSAGE_ID_NAME.put("60", "MPInductChange  Message");
         SM_MESSAGE_ID_NAME.put("101", "Request Inputs State Message");
         SM_MESSAGE_ID_NAME.put("102", "Request Errors Message");
         SM_MESSAGE_ID_NAME.put("103", "Request Jams Message");
@@ -101,6 +103,7 @@ public class HelperConfiguration {
         SM_MESSAGE_ID_NAME.put("123", "Device Command Message");
         SM_MESSAGE_ID_NAME.put("124", "SortMailpiece Message");
         SM_MESSAGE_ID_NAME.put("125", "Authorization To Start Message");
+        SM_MESSAGE_ID_NAME.put("127", "Request MPInduct Message");
         SM_MESSAGE_ID_NAME.put("130", "Ping Request");
         systemConstants.put("SM_MESSAGE_ID_NAME",SM_MESSAGE_ID_NAME);
 
@@ -159,6 +162,12 @@ public class HelperConfiguration {
             for (String motorKey : motors.keySet()) {
                 motorsCurrentSpeed.put(motorKey,0);
             }
+            query = "SELECT * FROM mpinducts";
+            dbBasicInfo.put("mpinducts",HelperDatabase.getSelectQueryResults(connection,query,new String[] { "machine_id", "mpinduct_id"}));
+
+            query = "SELECT * FROM mpinducts_labels ORDER BY ordering DESC";
+            dbBasicInfo.put("mpinducts_labels",HelperDatabase.getSelectQueryResults(connection,query));
+
             query = "SELECT * FROM parameters";
             dbBasicInfo.put("parameters",HelperDatabase.getSelectQueryResults(connection,query,new String[] { "machine_id", "param_id"}));
 
