@@ -364,9 +364,9 @@ public class ClientForSM implements Runnable, ObserverHmiMessage {
 					case 59:
 						ClientForSMMessageHandler.handleMessage_59(connection,clientInfo,dataBytes);
 						break;
-//					case 60:
-//						ClientForSMMessageHandler.handleMessage_60(connection,clientInfo,dataBytes);
-//						break;
+					case 60:
+						ClientForSMMessageHandler.handleMessage_60(connection,clientInfo,dataBytes);
+						break;
 					default:
 						logger.error("[MESSAGE_PROCESS][UNHANDLED] messageId: " + messageId);
 						break;

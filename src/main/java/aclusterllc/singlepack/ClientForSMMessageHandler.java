@@ -743,4 +743,30 @@ public class ClientForSMMessageHandler {
         }
         HelperDatabase.runMultipleQuery(connection,query);
     }
+    public static void handleMessage_60(Connection connection, JSONObject clientInfo, byte[] dataBytes) throws SQLException {
+        int machine_id=clientInfo.getInt("machine_id");
+        JSONObject mpinductsStates=HelperDatabase.getMpinductsStates(connection,clientInfo.getInt("machine_id"));
+        System.out.println(dataBytes.length);
+        String query="";
+        int mpinduct_id=HelperCommon.bytesToInt(Arrays.copyOfRange(dataBytes, 0, 2));
+        int state=HelperCommon.bytesToInt(Arrays.copyOfRange(dataBytes, 2, 4));
+        byte [] errorsBitData=HelperCommon.bitsFromBytes(Arrays.copyOfRange(dataBytes, 4, 6),2);
+        int count=HelperCommon.bytesToInt(Arrays.copyOfRange(dataBytes, 6, 8));
+        String updateQueryPart="";
+        updateQueryPart += format("`%s`='%s',","state",state);
+        updateQueryPart += format("`%s`='%s',","count",count);
+        for(int errorBit=0;errorBit<16;errorBit++){
+            updateQueryPart += format("`%s`='%s',","b"+errorBit,errorsBitData[errorBit]);
+        }
+        if(mpinductsStates.has(machine_id+"_"+mpinduct_id)){
+            JSONObject mpinductState= (JSONObject) mpinductsStates.get(machine_id+"_"+mpinduct_id);
+            query += format("UPDATE mpinducts_states SET %s `updated_at`=now()   WHERE `id`=%d;", updateQueryPart,mpinductState.getLong("id"));
+        }
+        else{
+            updateQueryPart += format("`%s`='%s',","machine_id",machine_id);
+            updateQueryPart += format("`%s`='%s',","mpinduct_id",mpinduct_id);
+            query += format("INSERT INTO mpinducts_states SET %s `updated_at`=now();", updateQueryPart);
+        }
+        HelperDatabase.runMultipleQuery(connection,query);
+    }
 }
