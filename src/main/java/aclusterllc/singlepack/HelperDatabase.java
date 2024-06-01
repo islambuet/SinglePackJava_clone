@@ -207,6 +207,10 @@ public class HelperDatabase {
         }
         return 0;
     }
+    public static JSONObject getMpinductsStates(Connection connection,int machineId) throws SQLException {
+        String query = String.format("SELECT * FROM mpinducts_states WHERE machine_id=%d", machineId);
+        return getSelectQueryResults(connection,query,new String[] { "machine_id", "mpinduct_id"});
+    }
     public static JSONObject getOutputsStates(Connection connection,int machineId) throws SQLException{
         String query = String.format("SELECT * FROM outputs_states WHERE machine_id=%d", machineId);
         return getSelectQueryResults(connection,query,new String[] { "machine_id", "output_id"});
