@@ -251,6 +251,10 @@ public class ServerForHmi implements Runnable {
                                 responseData.put(requestFunctionName,HelperDatabase.getMachineMode(connection,machine_id));
                                 break;
                             }
+                            case "mpinducts_states": {
+                                responseData.put(requestFunctionName,HelperDatabase.getMpinductsStates(connection,machine_id));
+                                break;
+                            }
                             case "motors_current_speed": {
                                 responseData.put(requestFunctionName,HelperConfiguration.motorsCurrentSpeed);
                                 break;
