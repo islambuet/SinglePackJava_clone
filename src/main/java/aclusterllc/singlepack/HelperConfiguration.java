@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static java.lang.String.format;
+
 public class HelperConfiguration {
     public static final Properties configIni = new Properties();
     public static boolean logSMMessages=false;
@@ -120,8 +122,38 @@ public class HelperConfiguration {
         SYSTEM_MODES.put("1", "Manual");
         systemConstants.put("SYSTEM_MODES",SYSTEM_MODES);
     }
+    public static void cleanupDatabase(){
+        try {
+            int delete_history_tables_older_than = Integer.parseInt((HelperConfiguration.configIni.getProperty("delete_history_tables_older_than")));
+            int delete_history_customer_tables_older_than = Integer.parseInt((HelperConfiguration.configIni.getProperty("delete_history_customer_tables_older_than")));
+            Connection connection = getConnection();
+            String query="";
+            query+=format("DELETE FROM alarms_history WHERE (date_active < NOW() - INTERVAL %d DAY);",delete_history_tables_older_than);
+            query+=format("DELETE FROM bins_states_history WHERE (updated_at < NOW() - INTERVAL %d DAY);",delete_history_tables_older_than);
+            query+=format("DELETE FROM conveyors_states_history WHERE (updated_at < NOW() - INTERVAL %d DAY);",delete_history_tables_older_than);
+            query+=format("DELETE FROM devices_states_history WHERE (updated_at < NOW() - INTERVAL %d DAY);",delete_history_tables_older_than);
+            query+=format("DELETE FROM inducts_states_history WHERE (updated_at < NOW() - INTERVAL %d DAY);",delete_history_tables_older_than);
+            query+=format("DELETE FROM inputs_states_history WHERE (updated_at < NOW() - INTERVAL %d DAY);",delete_history_tables_older_than);
+            query+=format("DELETE FROM statistics WHERE (created_at < NOW() - INTERVAL %d DAY);",delete_history_tables_older_than);
+            query+=format("DELETE FROM statistics_bins WHERE (created_at < NOW() - INTERVAL %d DAY);",delete_history_tables_older_than);
+            query+=format("DELETE FROM statistics_minutely WHERE (created_at < NOW() - INTERVAL %d DAY);",delete_history_tables_older_than);
+
+            query+=format("DELETE FROM products_history WHERE (created_at < NOW() - INTERVAL %d DAY);",delete_history_customer_tables_older_than);
+            query+=format("DELETE FROM statistics_bins_counter WHERE (created_at < NOW() - INTERVAL %d DAY);",delete_history_customer_tables_older_than);
+            query+=format("DELETE FROM statistics_bins_hourly WHERE (created_at < NOW() - INTERVAL %d DAY);",delete_history_customer_tables_older_than);
+            query+=format("DELETE FROM statistics_counter WHERE (created_at < NOW() - INTERVAL %d DAY);",delete_history_customer_tables_older_than);
+            query+=format("DELETE FROM statistics_hourly WHERE (created_at < NOW() - INTERVAL %d DAY);",delete_history_customer_tables_older_than);
+            HelperDatabase.runMultipleQuery(connection,query);
+            logger.info("Database Cleanup Completed");
+            connection.close();
+        }
+         catch (Exception ex) {
+            logger.error("[Database] Failed To Cleanup Data from database.Closing Java Program.");
+            logger.error(HelperCommon.getStackTraceString(ex));
+            System.exit(0);
+        }
+    }
     public static void loadDatabaseConfig(){
-        createDatabaseConnection();
         try {
             Connection connection=getConnection();
             String query = "SELECT * FROM alarms";
@@ -185,6 +217,7 @@ public class HelperConfiguration {
                     "INSERT IGNORE INTO statistics_bins_counter (machine_id,bin_id) SELECT DISTINCT machine_id,bin_id FROM bins WHERE NOT EXISTS (SELECT * FROM statistics_bins_counter);" +
                     "INSERT IGNORE INTO statistics_bins_hourly (machine_id,bin_id) SELECT DISTINCT machine_id,bin_id FROM bins WHERE NOT EXISTS (SELECT * FROM statistics_bins_hourly);";
             HelperDatabase.runMultipleQuery(connection,query);
+            connection.close();
         }
         catch (Exception ex) {
             logger.error("[Database] Failed To get Data from database.Closing Java Program.");
